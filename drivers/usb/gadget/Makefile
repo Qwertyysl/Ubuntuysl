@@ -1,3 +1,4 @@
+ccflags-y += -Idrivers/usb/gadget/
 #
 # USB peripheral controller drivers
 #

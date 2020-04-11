@@ -2563,7 +2563,7 @@ static void hci_pend_le_actions_clear(struct hci_dev *hdev)
 	BT_DBG("All LE pending actions cleared");
 }
 
-static int hci_dev_do_close(struct hci_dev *hdev)
+int hci_dev_do_close(struct hci_dev *hdev)
 {
 	BT_DBG("%s %pK", hdev->name, hdev);
 

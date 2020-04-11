@@ -332,6 +332,11 @@ config CPU_PM
 	bool
 	depends on SUSPEND || CPU_IDLE
 
+config	BOEFFLA_WL_BLOCKER
+		bool "Boeffla generic wakelock blocker driver"
+		depends on PM
+		default N
+
 config SUSPEND_TIME
 	bool "Log time spent in suspend"
 	---help---

@@ -1072,11 +1072,6 @@ static int send_filled_buffers_to_user(void)
 
 		ret = nl_srv_bcast(skb);
 		if (ret < 0) {
-			if (__ratelimit(&errCnt))
-			{
-			    pr_info("%s: Send Failed %d drop_count = %u\n",
-				  __func__, ret, gwlan_logging.drop_count);
-			}
 			gwlan_logging.drop_count++;
 			skb = NULL;
 			break;

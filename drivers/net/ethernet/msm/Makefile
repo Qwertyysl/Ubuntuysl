@@ -1,3 +1,4 @@
+ccflags-y += -Idrivers/net/ethernet/msm/
 #
 # Makefile for the msm networking support.
 #

@@ -48,6 +48,7 @@
 #include <linux/file.h>
 #include <linux/kthread.h>
 #include <linux/dma-buf.h>
+#include <linux/devfreq_boost.h>
 #include <linux/mdss_io_util.h>
 #include <linux/wakelock.h>
 #include "mdss_dsi.h"
@@ -334,7 +335,7 @@ static void mdss_fb_set_bl_brightness(struct led_classdev *led_cdev,
 	if (value > mfd->panel_info->brightness_max)
 		value = mfd->panel_info->brightness_max;
 
-if (backlight_dimmer) {
+	if (backlight_dimmer) {
 		MDSS_BRIGHT_TO_BL_DIM(bl_lvl, value);
 	} else {
 		/* This maps android backlight level 0 to 255 into
@@ -1699,7 +1700,8 @@ static int mdss_fb_probe(struct platform_device *pdev)
 	mfd->bl_scale = 1024;
 	mfd->bl_min_lvl = 30;
 	mfd->ad_bl_level = 0;
-	mfd->fb_imgType = MDP_RGBA_8888;
+	// Default framebuffer format.
+	mfd->fb_imgType = MDP_BGRA_8888;
 	mfd->calib_mode_bl = 0;
 	mfd->unset_bl_level = U32_MAX;
 
@@ -3147,6 +3149,25 @@ static int mdss_fb_register(struct msm_fb_data_type *mfd)
 		bpp = 4;
 		break;
 
+	case MDP_BGRA_8888:
+		fix->type = FB_TYPE_PACKED_PIXELS;
+		fix->xpanstep = 1;
+		fix->ypanstep = 1;
+		var->vmode = FB_VMODE_NONINTERLACED;
+		var->blue.offset = 0;
+		var->green.offset = 8;
+		var->red.offset = 16;
+		var->blue.length = 8;
+		var->green.length = 8;
+		var->red.length = 8;
+		var->blue.msb_right = 0;
+		var->green.msb_right = 0;
+		var->red.msb_right = 0;
+		var->transp.offset = 24;
+		var->transp.length = 8;
+		bpp = 4;
+		break;
+
 	case MDP_YCRYCB_H2V1:
 		fix->type = FB_TYPE_INTERLEAVED_PLANES;
 		fix->xpanstep = 2;
@@ -3823,6 +3844,7 @@ static int __ioctl_transition_dyn_mode_state(struct msm_fb_data_type *mfd,
 	mutex_lock(&mfd->switch_lock);
 	switch (cmd) {
 	case MSMFB_ATOMIC_COMMIT:
+		devfreq_boost_kick(DEVFREQ_MSM_CPUBW);
 		if ((mfd->switch_state == MDSS_MDP_WAIT_FOR_VALIDATE)
 				&& validate) {
 			if (mfd->switch_new_mode != SWITCH_RESOLUTION)
