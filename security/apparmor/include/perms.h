@@ -100,19 +100,6 @@ struct aa_perms {
 		(X)->hide = ALL_PERMS_MASK;			\
 	} while (0)
 
-extern struct aa_perms nullperms;
-extern struct aa_perms allperms;
-
-#define aa_perms_clear(X) memset((X), 0, sizeof(*(X)));
-#define aa_perms_all(X)						\
-	do {							\
-		aa_perms_clear(X);				\
-		(X)->allow = ALL_PERMS_MASK;			\
-		/* the following are only used for denials */	\
-		(X)->quiet = ALL_PERMS_MASK;			\
-		(X)->hide = ALL_PERMS_MASK;			\
-	} while (0)
-
 #define xcheck(FN1, FN2)	\
 ({				\
 	int e, error = FN1;	\
